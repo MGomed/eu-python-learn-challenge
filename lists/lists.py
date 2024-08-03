@@ -11,14 +11,14 @@ class ListExercise:
         if len(input_list) == 0:
             return input_list
 
-        max = input_list[0]
+        max_element = input_list[0]
         for element in input_list:
-            if max < element:
-                max = element
+            if max_element < element:
+                max_element = element
 
         for index, element in enumerate(input_list):
             if element > 0:
-                input_list[index] = max
+                input_list[index] = max_element
 
         return input_list
 
