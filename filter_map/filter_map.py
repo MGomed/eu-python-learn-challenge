@@ -18,8 +18,8 @@ class FilterMapExercise:
 
         result_array = []
         for element in input_array:
-            result = func(element)
-            if result[0]:
-                result_array.append(result[1])
+            ok, new_element = func(element)
+            if ok:
+                result_array.append(new_element)
 
         return result_array
