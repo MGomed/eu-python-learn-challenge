@@ -1,4 +1,6 @@
-from flask import Flask
+from typing import Union, Any
+from flask import Flask, request, jsonify
+from http import HTTPStatus
 
 
 class FlaskExercise:
@@ -28,4 +30,51 @@ class FlaskExercise:
 
     @staticmethod
     def configure_routes(app: Flask) -> None:
-        pass
+        users: dict[str, dict] = {}
+
+        @app.route("/user", methods=["POST"])
+        def create_user() -> Union[Any, HTTPStatus]:
+            req = request.get_json()
+            if "name" not in req:
+                return (
+                    jsonify({"errors": {"name": "This field is required"}}),
+                    HTTPStatus.UNPROCESSABLE_ENTITY,
+                )
+
+            name = req["name"]
+            users[name] = {}
+            return (
+                jsonify({"data": f"User {name} is created!"}),
+                HTTPStatus.CREATED,
+            )
+
+        @app.route("/user/<name>", methods=["GET"])
+        def get_user(name: str) -> Union[Any, HTTPStatus]:
+            if name not in users:
+                return "", HTTPStatus.NOT_FOUND
+
+            return (
+                jsonify({"data": f"My name is {name}"}),
+                HTTPStatus.OK,
+            )
+
+        @app.route("/user/<name>", methods=["PATCH"])
+        def update_user(name: str) -> Union[Any, HTTPStatus]:
+            req = request.get_json()
+            if "name" not in req:
+                return "", HTTPStatus.NOT_FOUND
+
+            new_name = req["name"]
+            users[new_name] = users.pop(name)
+            return (
+                jsonify({"data": f"My name is {new_name}"}),
+                HTTPStatus.OK,
+            )
+
+        @app.route("/user/<name>", methods=["DELETE"])
+        def delete_user(name: str) -> Union[Any, HTTPStatus]:
+            if name not in users:
+                return "", HTTPStatus.NOT_FOUND
+
+            users.pop(name)
+            return "", HTTPStatus.NO_CONTENT
